@@ -40,6 +40,7 @@ public class CameraFrame extends JFrame implements ActionListener
 		}
 		
 		thread.start();
+		add(cameraPanel);
 		setJMenuBar(menuBar);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(400, 400);
