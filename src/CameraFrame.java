@@ -10,11 +10,17 @@ import org.opencv.highgui.VideoCapture;
 
 public class CameraFrame extends JFrame implements ActionListener
 {
+	CameraPanel cameraPanel;
+	
 	CameraFrame()
 	{
 		System.loadLibrary("opencv_java2410");
 		//	Capture a video. Parameter indicates the device ID of the camera on the PC.
 		VideoCapture list = new VideoCapture(0);
+		
+		cameraPanel = new CameraPanel();
+		Thread thread = new Thread(cameraPanel);
+		
 		JMenu cameraMenu = new JMenu("Camera");
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(cameraMenu);
@@ -33,6 +39,7 @@ public class CameraFrame extends JFrame implements ActionListener
 			i++;
 		}
 		
+		thread.start();
 		setJMenuBar(menuBar);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(400, 400);
