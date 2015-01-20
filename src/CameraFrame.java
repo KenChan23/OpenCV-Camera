@@ -55,6 +55,10 @@ public class CameraFrame extends JFrame implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		JMenuItem source = (JMenuItem)(e.getSource());
 		
+		int number = Integer.parseInt(source.getText().substring(7)) - 1;
+		
+		cameraPanel.switchCamera(number);
 	}
 }

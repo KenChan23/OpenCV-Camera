@@ -106,4 +106,9 @@ public class CameraPanel extends JPanel implements Runnable, ActionListener
 		final byte[] target = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
 		System.arraycopy(source, 0, target, 0, source.length);
 	}
+	
+	public void switchCamera(int x)
+	{
+		capture = new VideoCapture(x);
+	}
 }
