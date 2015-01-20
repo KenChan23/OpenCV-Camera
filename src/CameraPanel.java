@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Rect;
 import org.opencv.highgui.VideoCapture;
+import org.opencv.objdetect.CascadeClassifier;
 
 
 public class CameraPanel extends JPanel implements Runnable, ActionListener
@@ -22,8 +26,17 @@ public class CameraPanel extends JPanel implements Runnable, ActionListener
 	VideoCapture capture;
 	JButton screenshotButton;
 	
+	//	For face detection
+	CascadeClassifier faceDetector;
+	//	Tracks faces.
+	MatOfRect faceDetections;
+	
 	CameraPanel()
 	{
+		//	Pass an XML file from [opencv-2.4.10 -> data -> haarcascades]
+		faceDetector = new CascadeClassifier(getClass().getResource("lbpcascade_frontalface.xml").getPath());
+		faceDetections = new MatOfRect();
+				
 		screenshotButton = new JButton("Screenshot");
 		screenshotButton.addActionListener(this);
 		add(screenshotButton);
@@ -71,8 +84,13 @@ public class CameraPanel extends JPanel implements Runnable, ActionListener
 				{
 					//	Handle sizing of window.
 					JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-					topFrame.setSize(webcam_image.width() + 20, webcam_image.height() + 40);
-					MatToBufferedImage(webcam_image);
+					topFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 110);
+					matToBufferedImage(webcam_image);
+					
+					//	Uses XML file to find/determine faces and sends them to faceDetections.
+					faceDetector.detectMultiScale(webcam_image, faceDetections);
+				    System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
+					
 					repaint();
 				}
 			}
@@ -89,9 +107,17 @@ public class CameraPanel extends JPanel implements Runnable, ActionListener
 		}
 		
 		g.drawImage(image, 10, 40, image.getWidth(), image.getHeight(), null);
+		
+		//	Draw rectangles around faces found.
+		g.setColor(Color.GREEN);
+		for(Rect rect : faceDetections.toArray())
+		{
+			System.out.println("Inside");
+			g.drawRect(rect.x + 10, rect.y + 40, rect.width, rect.height);
+		}
 	}
 	
-	public void MatToBufferedImage(Mat matBGR)
+	public void matToBufferedImage(Mat matBGR)
 	{
 		int width = matBGR.width();
 		int height = matBGR.height();
